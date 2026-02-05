@@ -37,4 +37,5 @@ After connecting to a printer, status monitoring starts automatically and displa
 
 ## Documentation
 
-For complete Epson ePOS SDK documentation, visit: [Epson ePOS SDK JavaScript Reference](https://reference.epson-biz.com/modules/ref_epos_sdk_js_en/index.php?content_id=1#BHIDAHEE)
+For complete Epson ePOS SDK documentation, visit:
+- [Epson ePOS SDK JavaScript Reference](https://download4.epson.biz/sec_pubs/pos/reference_en/epos_js/index.html)
