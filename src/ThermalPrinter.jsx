@@ -1,4 +1,14 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
+import {
+  Container,
+  Form,
+  Button,
+  Badge,
+  Card,
+  Row,
+  Col,
+  Spinner,
+} from "react-bootstrap";
 
 const ThermalPrinter = () => {
   const [printerIPAddress, setPrinterIPAddress] = useState("192.168.0.121");
@@ -139,90 +149,138 @@ const ThermalPrinter = () => {
   };
 
   return (
-    <div id="thermalPrinter">
-      <input
-        id="printerIPAddress"
-        placeholder="Printer IP Address"
-        value={printerIPAddress}
-        onChange={(e) => setPrinterIPAddress(e.currentTarget.value)}
-      />
-      <input
-        id="printerPort"
-        placeholder="Printer Port"
-        value={printerPort}
-        onChange={(e) => setPrinterPort(e.currentTarget.value)}
-      />
-      <button
-        disabled={connectionStatus === STATUS_CONNECTED}
-        onClick={() => connect()}
-      >
-        Connect
-      </button>
-      <span className="status-label">{connectionStatus}</span>
-      {connectionStatus === STATUS_CONNECTED && (
-        <div style={{ marginTop: "10px" }}>
-          <div style={{ marginBottom: "5px" }}>
-            <span style={{ fontSize: "12px", color: "#666" }}>
-              Monitoring:{" "}
-            </span>
-            <span
-              style={{
-                fontSize: "12px",
-                color: isMonitoring ? "#28a745" : "#dc3545",
-                fontWeight: "bold",
-              }}
-            >
-              {isMonitoring ? "Active" : "Inactive"}
-            </span>
-          </div>
-          <div>
-            <span style={{ fontSize: "12px", color: "#666" }}>
-              Cover Status:{" "}
-            </span>
-            <span
-              style={{
-                fontSize: "12px",
-                fontWeight: "bold",
-                color:
-                  coverStatus === "open"
-                    ? "#dc3545"
-                    : coverStatus === "closed"
-                    ? "#28a745"
-                    : "#6c757d",
-                padding: "2px 8px",
-                borderRadius: "3px",
-                backgroundColor:
-                  coverStatus === "open"
-                    ? "#f8d7da"
-                    : coverStatus === "closed"
-                    ? "#d4edda"
-                    : "#e9ecef",
-              }}
-            >
-              {coverStatus === "open"
-                ? "Open"
-                : coverStatus === "closed"
-                ? "Closed"
-                : "Unknown"}
-            </span>
-          </div>
-        </div>
-      )}
-      <hr />
-      <textarea
-        id="textToPrint"
-        rows="3"
-        placeholder="Text to print"
-        value={textToPrint}
-        onChange={(e) => setTextToPrint(e.currentTarget.value)}
-      />
-      <button
-        disabled={connectionStatus !== STATUS_CONNECTED}
-        onClick={() => print(textToPrint)}
-      >
-        Print
-      </button>
-    </div>
+    <Container className="mt-4">
+      <Row>
+        <Col lg={4} md={6} className="mb-4">
+          <Card>
+            <Card.Header>Printer Connection</Card.Header>
+            <Card.Body>
+              <Form>
+                <Form.Group className="mb-3">
+                  <Form.Label>Printer IP Address</Form.Label>
+                  <Form.Control
+                    id="printerIPAddress"
+                    type="text"
+                    placeholder="192.168.0.121"
+                    value={printerIPAddress}
+                    onChange={(e) => setPrinterIPAddress(e.target.value)}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Printer Port</Form.Label>
+                  <Form.Control
+                    id="printerPort"
+                    type="text"
+                    placeholder="8008"
+                    value={printerPort}
+                    onChange={(e) => setPrinterPort(e.target.value)}
+                  />
+                </Form.Group>
+                <Button
+                  variant="primary"
+                  disabled={
+                    connectionStatus === STATUS_CONNECTED ||
+                    connectionStatus === "Connecting ..."
+                  }
+                  onClick={() => connect()}
+                >
+                  {connectionStatus === "Connecting ..." && (
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                      className="me-2"
+                    />
+                  )}
+                  {connectionStatus === "Connecting ..."
+                    ? "Connecting..."
+                    : "Connect"}
+                </Button>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col lg={4} md={6} className="mb-4">
+          <Card>
+            <Card.Header>Print Text</Card.Header>
+            <Card.Body>
+              <Form>
+                <Form.Group className="mb-3">
+                  <Form.Label>Text to Print</Form.Label>
+                  <Form.Control
+                    id="textToPrint"
+                    as="textarea"
+                    rows={3}
+                    placeholder="Enter text to print..."
+                    value={textToPrint}
+                    onChange={(e) => setTextToPrint(e.target.value)}
+                  />
+                </Form.Group>
+                <Button
+                  variant="success"
+                  disabled={connectionStatus !== STATUS_CONNECTED}
+                  onClick={() => print(textToPrint)}
+                >
+                  Print
+                </Button>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col lg={4} md={12} className="mb-4">
+          <Card>
+            <Card.Header>Printer Status</Card.Header>
+            <Card.Body>
+              <div className="mb-3">
+                <strong className="me-2">Connection:</strong>
+                <Badge
+                  bg={
+                    connectionStatus === STATUS_CONNECTED
+                      ? "success"
+                      : "secondary"
+                  }
+                >
+                  {connectionStatus || "Not Connected"}
+                </Badge>
+              </div>
+
+              {connectionStatus === STATUS_CONNECTED && (
+                <>
+                  <div className="mb-3">
+                    <strong className="me-2">Monitoring:</strong>
+                    <Badge bg={isMonitoring ? "success" : "danger"}>
+                      {isMonitoring ? "Active" : "Inactive"}
+                    </Badge>
+                  </div>
+                  <div>
+                    <strong className="me-2">Cover Status:</strong>
+                    <Badge
+                      bg={
+                        coverStatus === "open"
+                          ? "danger"
+                          : coverStatus === "closed"
+                          ? "success"
+                          : "secondary"
+                      }
+                    >
+                      {coverStatus === "open"
+                        ? "Open"
+                        : coverStatus === "closed"
+                        ? "Closed"
+                        : "Unknown"}
+                    </Badge>
+                  </div>
+                </>
+              )}
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

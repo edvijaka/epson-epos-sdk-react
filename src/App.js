@@ -4,9 +4,7 @@ import ThermalPrinter from "./ThermalPrinter";
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <ThermalPrinter />
-      </header>
+      <ThermalPrinter />
     </div>
   );
 }
