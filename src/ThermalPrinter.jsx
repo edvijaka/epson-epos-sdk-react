@@ -11,6 +11,7 @@ import {
 import { usePrinterConnection } from "./hooks/usePrinterConnection";
 import { usePrinterMonitoring } from "./hooks/usePrinterMonitoring";
 import StatusCard from "./components/StatusCard";
+import { ConnectionStatus } from "./constants";
 
 const ThermalPrinter = () => {
   const [textToPrint, setTextToPrint] = useState("");
@@ -21,6 +22,7 @@ const ThermalPrinter = () => {
     printerPort,
     setPrinterPort,
     connectionStatus,
+    errorMessage,
     connect,
     printer,
     isConnected,
@@ -76,11 +78,11 @@ const ThermalPrinter = () => {
                 <Button
                   variant="primary"
                   disabled={
-                    isConnected || connectionStatus === "Connecting ..."
+                    isConnected || connectionStatus === ConnectionStatus.CONNECTING
                   }
                   onClick={() => connect()}
                 >
-                  {connectionStatus === "Connecting ..." && (
+                  {connectionStatus === ConnectionStatus.CONNECTING && (
                     <Spinner
                       as="span"
                       animation="border"
@@ -90,7 +92,7 @@ const ThermalPrinter = () => {
                       className="me-2"
                     />
                   )}
-                  {connectionStatus === "Connecting ..."
+                  {connectionStatus === ConnectionStatus.CONNECTING
                     ? "Connecting..."
                     : "Connect"}
                 </Button>
@@ -130,6 +132,7 @@ const ThermalPrinter = () => {
         <Col lg={4} md={12} className="mb-4">
           <StatusCard
             connectionStatus={connectionStatus}
+            errorMessage={errorMessage}
             isMonitoring={isMonitoring}
             coverStatus={coverStatus}
             isConnected={isConnected}

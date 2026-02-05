@@ -1,10 +1,13 @@
 import React from "react";
 import { Card, Badge } from "react-bootstrap";
-import { STATUS_CONNECTED } from "../constants";
+import { ConnectionStatus, getConnectionStatusText } from "../constants";
 
-const StatusCard = ({ connectionStatus, isMonitoring, coverStatus, isConnected }) => {
+const StatusCard = ({ connectionStatus, errorMessage, isMonitoring, coverStatus, isConnected }) => {
   const getConnectionBadgeVariant = () => {
-    return isConnected ? "success" : "secondary";
+    if (connectionStatus === ConnectionStatus.CONNECTED) return "success";
+    if (connectionStatus === ConnectionStatus.ERROR) return "danger";
+    if (connectionStatus === ConnectionStatus.CONNECTING) return "warning";
+    return "secondary";
   };
 
   const getMonitoringBadgeVariant = () => {
@@ -30,7 +33,7 @@ const StatusCard = ({ connectionStatus, isMonitoring, coverStatus, isConnected }
         <div className="mb-3">
           <strong className="me-2">Connection:</strong>
           <Badge bg={getConnectionBadgeVariant()}>
-            {connectionStatus || "Not Connected"}
+            {getConnectionStatusText(connectionStatus, errorMessage)}
           </Badge>
         </div>
 

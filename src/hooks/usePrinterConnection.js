@@ -1,26 +1,30 @@
 import { useState, useRef } from "react";
-import { STATUS_CONNECTED } from "../constants";
+import { ConnectionStatus } from "../constants";
 
 export const usePrinterConnection = () => {
   const [printerIPAddress, setPrinterIPAddress] = useState("192.168.0.121");
   const [printerPort, setPrinterPort] = useState("8008");
-  const [connectionStatus, setConnectionStatus] = useState("");
+  const [connectionStatus, setConnectionStatus] = useState(ConnectionStatus.DISCONNECTED);
+  const [errorMessage, setErrorMessage] = useState("");
   const ePosDevice = useRef();
   const printer = useRef();
 
   const connect = (onConnected) => {
-    setConnectionStatus("Connecting ...");
+    setConnectionStatus(ConnectionStatus.CONNECTING);
+    setErrorMessage("");
 
     if (!printerIPAddress) {
-      setConnectionStatus("Type the printer IP address");
+      setConnectionStatus(ConnectionStatus.ERROR);
+      setErrorMessage("Type the printer IP address");
       return;
     }
     if (!printerPort) {
-      setConnectionStatus("Type the printer port");
+      setConnectionStatus(ConnectionStatus.ERROR);
+      setErrorMessage("Type the printer port");
       return;
     }
 
-    setConnectionStatus("Connecting ...");
+    setConnectionStatus(ConnectionStatus.CONNECTING);
 
     let ePosDev = new window.epson.ePOSDevice();
     ePosDevice.current = ePosDev;
@@ -34,23 +38,26 @@ export const usePrinterConnection = () => {
           (devobj, retcode) => {
             if (retcode === "OK") {
               printer.current = devobj;
-              setConnectionStatus(STATUS_CONNECTED);
+              setConnectionStatus(ConnectionStatus.CONNECTED);
+              setErrorMessage("");
               // Call onConnected callback if provided
               if (onConnected) {
                 onConnected();
               }
             } else {
-              setConnectionStatus(`Error: ${retcode}`);
+              setConnectionStatus(ConnectionStatus.ERROR);
+              setErrorMessage(`Error: ${retcode}`);
             }
           }
         );
       } else {
-        setConnectionStatus(`Error: ${data}`);
+        setConnectionStatus(ConnectionStatus.ERROR);
+        setErrorMessage(`Error: ${data}`);
       }
     });
   };
 
-  const isConnected = connectionStatus === STATUS_CONNECTED;
+  const isConnected = connectionStatus === ConnectionStatus.CONNECTED;
 
   return {
     printerIPAddress,
@@ -58,6 +65,7 @@ export const usePrinterConnection = () => {
     printerPort,
     setPrinterPort,
     connectionStatus,
+    errorMessage,
     connect,
     printer,
     ePosDevice,
